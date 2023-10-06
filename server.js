@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,7 +20,6 @@ app.use('/admin', require('./routes/admin-route'))
 app.options('*', function(req, res){
     res.sendStatus(200);
 });
-
 
 server.listen(port, (err) => {
     if(err) {

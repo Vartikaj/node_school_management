@@ -1,35 +1,19 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
-const url = 'mongodb://localhost:27017';
+//Provide ip for connection instead of localhost
+const dbConnect = 'mongodb://127.0.0.1:27017/school';
+mongoose.Promise = global.Promise;
 
-const client = new MongoClient(url);
-// Database Name
-const dbName = 'testdb';
-
-async function main() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log('Connected successfully to server');
-  const db = client.db(dbName);
-  const collection = db.collection('test');
-
-  // the following code examples can be pasted here...
-
-  return 'done.';
-}
-// mongoose.Promise = global.Promise;
-
-// mongoose.connect(dbConnect, {
-//     useNewUrlParser: true, 
-//     useUnifiedTopology: true
-// }).then(() => {
-//     console.log('Connected to MongoDB');
-// }).catch((error) => {
-//     console.error('Error connecting to MongoDB:', error);
-// });
-
-main();
+mongoose.connect(dbConnect, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true
+}).then(() => {
+    
+    console.log('Connected to MongoDB');
+}).catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+});
 
 module.exports = router;
