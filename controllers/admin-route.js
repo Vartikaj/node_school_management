@@ -24,6 +24,7 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
     try{
         const logData = new registrationForm(req.body);
         
+
     } catch (error) {
 
     } 

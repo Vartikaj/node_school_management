@@ -119,7 +119,6 @@ const registrationFormSchema = new Schema({
     password: {
         type: String,
         maxLength: [30, 'Password length not more then 30 characters long'],
-        unique: true,
         trim: true,
     },
     genderCode: Number,
