@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
-const validatorPackage = require('validator')
-const uniqueValidator = require('mongoose-unique-validator')
+const validatorPackage = require('validator');
+const uniqueValidator = require('mongoose-unique-validator');
+const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
 
 const lstTransport = new Schema({
@@ -66,6 +69,7 @@ const lstguardianDetailSchema = new Schema({
         caseInsenstive : true,
         validate: {
             validator: validatorPackage.isEmail,
+            message: 'Please provide a valid email address',
         }
     },
     blood_group: String,
@@ -115,11 +119,18 @@ const registrationFormSchema = new Schema({
         maxLength: [30, 'Username length not more then 30 characters long'],
         unique: true,
         trim: true,
+        lowercase: true,
     },
     password: {
         type: String,
         maxLength: [30, 'Password length not more then 30 characters long'],
         trim: true,
+        minLength: [8, 'Password must be at least 8 characters long'],
+        maxLength: [128, 'Password must be less then 128 characters long']
+    },
+    loginCount:{
+        type:Number,
+        default: 0
     },
     genderCode: Number,
     genderDisplay: String,
@@ -133,9 +144,45 @@ const registrationFormSchema = new Schema({
     library_facility : Boolean,
     active : Boolean
 })
+
+//THIS IS FOR UNIQUE VALUE ACCEPTOR
 registrationFormSchema.plugin(uniqueValidator, { message : '{PATH}: {VALUE} is already exists!!' });
+//==================
+
+//THIS IS FOR PASSWORD ENCRYPTION
+registrationFormSchema.pre('save', async function(){
+    const user = this;
+    if(!user.isModified('password')){
+        return;
+    }
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+})
+//===============================
+
+//COMPARE PASSWORD WITH HASHED PASSWORD IN DATABASE
+registrationFormSchema.methods.comparePassword = async function(password){
+    return await bcrypt.compare(password, this.password);
+}
+//================================
+
+//INCREMENT LOGIN COUNT WHEN USER LOGS IN
+registrationFormSchema.method.incrementLoginCount = async function() {
+    this.loginCount += 1;
+    return await this.save();
+}
+//=======================================
+
+//Generate a JWT token
+registrationFormSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ _id : this._id }, process.env.JWT_SECRET, { expiresIn: 'id' });
+    return token;
+}
+//====================
 
 const registrationForm = mongoose.model('registration', registrationFormSchema);
+
+
 
 
 
@@ -159,6 +206,19 @@ const registrationForm = mongoose.model('registration', registrationFormSchema);
 //===========================================
 
 module.exports = registrationForm;
+
+module.exports.validatePassword = function(password){
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]\\|:;'<>,.?/])[a-zA-Z\d!@#$%^&*()_\-+={}[\]\\|:;'<>,.?/]{8,}$/;
+    return regex.test(password);
+}
+
+
+module.exports.loginLimiter = rateLimit({
+    windowMs: 30 * 1000,
+    max: 5,
+    message: 'Too many login attempts from this IP, please try again later'
+});
+
 
 //IF WE WANT TO CREATE MULTIPLE COLLECTION THEN WE USE THIS
 // lstguardianDetails : lstguardianDetailModel,
