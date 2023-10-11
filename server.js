@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const express = require('express');
 const bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const app = express();
@@ -13,6 +14,8 @@ const helmet = require('helmet'); // SECURING OUR SITE FOR CLICKJACKING, CROSS-S
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }))
+app.use(cookieParser());
+
 app.use('/api', api)
 
 app.use('/admin', require('./routes/admin-route'))

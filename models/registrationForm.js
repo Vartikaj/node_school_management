@@ -167,7 +167,7 @@ registrationFormSchema.methods.comparePassword = async function(password){
 //================================
 
 //INCREMENT LOGIN COUNT WHEN USER LOGS IN
-registrationFormSchema.method.incrementLoginCount = async function() {
+registrationFormSchema.methods.incrementLoginCount = async function() {
     this.loginCount += 1;
     return await this.save();
 }
@@ -175,8 +175,17 @@ registrationFormSchema.method.incrementLoginCount = async function() {
 
 //Generate a JWT token
 registrationFormSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id : this._id }, process.env.JWT_SECRET, { expiresIn: 'id' });
+    const token = jwt.sign({ _id : this._id }, process.env.JWT_SECRET, { expiresIn: 50000 });
     return token;
+}
+registrationFormSchema.statics.findByToken = async function(token) {
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // console.log(decoded);
+        return await this.findOne({ _id : decoded._id});
+    } catch (err) {
+        throw new Error(`Error verifying token: ${err.message}`);
+    }
 }
 //====================
 
@@ -214,7 +223,7 @@ module.exports.validatePassword = function(password){
 
 
 module.exports.loginLimiter = rateLimit({
-    windowMs: 30 * 1000,
+    windowMs: 15 * 60 * 1000,
     max: 5,
     message: 'Too many login attempts from this IP, please try again later'
 });

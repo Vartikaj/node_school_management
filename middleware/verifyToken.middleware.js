@@ -2,8 +2,12 @@ const registrationForm = require("../models/registrationForm");
 
 const VerifyToken = async(req, res, next) => {
     try {
+
         const token = req.cookies.token;
         const user = await registrationForm.findByToken(token);
+        // const headerToken = req.header(tokenHeaderKey); 
+        // console.log(token);
+
         if(!user) {
             throw new Error("Unauthorized");
         }
