@@ -8,8 +8,6 @@ exports.postRegistrationData = asyncHandler(async (req, res, next) => {
     try {
         // const regis = this;
         const regData = new registrationForm(req.body);
-
-
         const insertUserData = await regData.save();
 
         res.status(200).json({
@@ -28,6 +26,15 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
     try {
         const username = req.body.username;
         const password = req.body.password;
+
+        //SET THE CACHE VALUE
+        const cacheKey = `${username}-${password}`;
+        // Check if the credentials are in the cache
+        const cachedSessionData = myCache.get(cacheKey);
+        console.log(cachedSessionData);
+        //===================
+
+        
         const user = await registrationForm.findOne({ username: username }).exec();
 
         const isMatch = await user.comparePassword(password);
@@ -35,10 +42,10 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
             return res.status(401).json({ message: 'Invalid username or password' });
         } else {
             const token = user.generateAuthToken();
+            console.log(token);
             await user.incrementLoginCount();
             res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false });
             
-
             user.lstguardianDetail = [];
             user.lstContactDetail = [];
             user.lstClass = [];
@@ -51,7 +58,6 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
                 token: token
             })
         }
-
     } catch (error) {
         res.status(200).json({
             success: false,
@@ -63,18 +69,12 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
 
 exports.getProfile = asyncHandler(async (req, res, next) => {
     try {
-        //console.log('call token1');
-
-        const header = req.header.cookies;
-        if(header==req.cookies.token){
-
-        }
-        console.log('Login successfuly')
+        //const cachedData = myCache.get(cacheKey)
+        console.log('Login successfuly');
         console.log(req.body);
         res.status(200).json({
             success: true,
-            token : req.cookies.token,
-
+            data: req.body,
         })
     } catch (error) {
         res.status(200).json({

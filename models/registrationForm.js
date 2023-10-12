@@ -175,7 +175,7 @@ registrationFormSchema.methods.incrementLoginCount = async function() {
 
 //Generate a JWT token
 registrationFormSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id : this._id }, process.env.JWT_SECRET, { expiresIn: 50000 });
+    const token = jwt.sign({ _id : this._id }, process.env.JWT_SECRET, { expiresIn: 5000 });
     return token;
 }
 registrationFormSchema.statics.findByToken = async function(token) {

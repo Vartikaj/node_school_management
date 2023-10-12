@@ -2,6 +2,8 @@ const express = require('express');
 const ApiRateLimiter = require("../middleware/attempts.middleware");
 const router = express.Router();
 const VerifyToken = require('../middleware/verifyToken.middleware');
+const NodeCache = require("node-cache");
+const myCache = new NodeCache();
 
 const {
     postRegistrationData,
