@@ -11,15 +11,14 @@ const VerifyToken = async (req, res, next) => {
 
         } else {
             const user = await registrationForm.findByToken(token);
-            // const headerToken = req.header(tokenHeaderKey); 
-            console.log(user);
+            const idData = user._id;
+            console.log(idData);
 
             if (!user) {
                 throw new Error("Unauthorized");
             }
             req.user = user;
-            next();
-
+            res.send(`id=${user._id}`);
         }
     } catch (err) {
         res.status(401).json({ message: err.message });

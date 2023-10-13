@@ -1,1 +1,12 @@
 https://stackoverflow.com/questions/18022365/mongoose-validate-email-syntax
+
+
+FOR CACHE
+https://blog.logrocket.com/caching-node-js-optimize-app-performance/
+
+FOR LOGIN FORM : 
+https://medium.com/@techsuneel99/secure-login-and-registration-in-node-js-20ac65d2a247
+
+Cashe Related link : 
+https://medium.com/@developerom/power-of-caching-in-node-js-a-comprehensive-guide-214e2f343d57
+https://www.digitalocean.com/community/tutorials/how-to-implement-caching-in-node-js-using-redis

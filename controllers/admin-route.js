@@ -3,6 +3,9 @@ const asyncHandler = (fn) => (req, res, next) => {
 };
 const bcrypt = require('bcryptjs');
 const registrationForm = require('../models/registrationForm');
+const NodeCache = require('node-cache');
+const myCache = new NodeCache();
+const SESSION_DURATION_SECONDS = 60; // Set session duration to 60 seconds (1 minute)
 
 exports.postRegistrationData = asyncHandler(async (req, res, next) => {
     try {
@@ -26,15 +29,6 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
     try {
         const username = req.body.username;
         const password = req.body.password;
-
-        //SET THE CACHE VALUE
-        const cacheKey = `${username}-${password}`;
-        // Check if the credentials are in the cache
-        const cachedSessionData = myCache.get(cacheKey);
-        console.log(cachedSessionData);
-        //===================
-
-        
         const user = await registrationForm.findOne({ username: username }).exec();
 
         const isMatch = await user.comparePassword(password);
@@ -69,7 +63,7 @@ exports.postLoginForm = asyncHandler(async (req, res, next) => {
 
 exports.getProfile = asyncHandler(async (req, res, next) => {
     try {
-        //const cachedData = myCache.get(cacheKey)
+        console.log(req.params.id);
         console.log('Login successfuly');
         console.log(req.body);
         res.status(200).json({
