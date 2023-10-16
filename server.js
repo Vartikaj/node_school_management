@@ -10,6 +10,7 @@ const app = express();
 const server = require('http').Server(app);
 const port = 3000;
 const api = require('./dbConnection');
+const routeApi = require('./routes/index-route');
 const helmet = require('helmet'); // SECURING OUR SITE FOR CLICKJACKING, CROSS-SITE-SCRIPTING ATTACKS
 // Body parser middleware to parse POST request data
 app.use(express.json());
@@ -20,9 +21,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(cookieParser());
 
-app.use('/api', api)
+app.use('/api', api);
+app.use('/', routeApi);
 
-app.use('/admin', require('./routes/admin-route'))
 
 app.options('*', function(req, res){
     res.sendStatus(200);

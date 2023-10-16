@@ -180,8 +180,9 @@ registrationFormSchema.methods.generateAuthToken = function () {
 }
 registrationFormSchema.statics.findByToken = async function(token) {
     try {
+        console.log("Token : "+ token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log(decoded);
+        console.log("decoded id : " + decoded._id);
         return await this.findOne({ _id : decoded._id});
     } catch (err) {
         throw new Error(`Error verifying token: ${err.message}`);

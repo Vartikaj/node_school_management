@@ -9,10 +9,12 @@ const {
     postRegistrationData,
     postLoginForm,
     getProfile,
+    getEditProfile,
 } = require('../controllers/admin-route');
 
 router.route('/postRegistrationData').post(postRegistrationData);
 router.route('/postLoginForm').post(ApiRateLimiter, postLoginForm);
 router.route('/getProfile').get(VerifyToken, getProfile);
+router.route('/getEditProfile').get(VerifyToken, getEditProfile);
 
 module.exports = router;
